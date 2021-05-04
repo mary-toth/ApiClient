@@ -42,27 +42,73 @@ namespace ApiClient
 
                 var token = "";
 
-                if (args.Length == 0)
+
+                Console.WriteLine("-----------------------------------");
+                Console.WriteLine("Welcome!");
+                Console.WriteLine("Choose a menu option:");
+                Console.WriteLine("[V] - search by state. [C] - search by city. [P] - search by postal code. [Q] - quit.");
+                var choice = Console.ReadLine().ToUpper();
+
+                if (choice == "P")
+                {
+                    Console.WriteLine("-----------------------------------");
+                    Console.Write("Type a postal code to show that postal code's breweries: ");
+                    token = Console.ReadLine();
+                    Console.WriteLine("-----------------------------------");
+                    var url = $"https://api.openbrewerydb.org/breweries?by_postal={token}";
+
+                    var responseAsStream = await client.GetStreamAsync(url);
+
+                    var items = await JsonSerializer.DeserializeAsync<List<Item>>(responseAsStream);
+
+                    foreach (var item in items)
+                    {
+                        Console.WriteLine($"{item.name} - {item.city}, {item.postal_code}");
+                    }
+                }
+
+                if (choice == "C")
+                {
+                    Console.WriteLine("-----------------------------------");
+                    Console.Write("Type a city to show that city's breweries: ");
+                    token = Console.ReadLine();
+                    Console.WriteLine("-----------------------------------");
+                    var url = $"https://api.openbrewerydb.org/breweries?by_city={token}";
+
+                    var responseAsStream = await client.GetStreamAsync(url);
+
+                    var items = await JsonSerializer.DeserializeAsync<List<Item>>(responseAsStream);
+
+                    foreach (var item in items)
+                    {
+                        Console.WriteLine($"{item.name} - {item.city}, {item.state}");
+                    }
+                }
+
+                if (choice == "V")
                 {
                     Console.WriteLine("-----------------------------------");
                     Console.Write("Type a state to show that state's breweries: ");
                     token = Console.ReadLine();
                     Console.WriteLine("-----------------------------------");
+                    var url = $"https://api.openbrewerydb.org/breweries?by_state={token}";
+
+                    var responseAsStream = await client.GetStreamAsync(url);
+
+                    var items = await JsonSerializer.DeserializeAsync<List<Item>>(responseAsStream);
+
+                    foreach (var item in items)
+                    {
+                        Console.WriteLine($"{item.name} - {item.city}, {item.state}");
+                    }
                 }
-                else
+
+                else if (choice == "Q")
                 {
-                    token = args[0];
-                }
-
-                var url = $"https://api.openbrewerydb.org/breweries?by_state={token}";
-
-                var responseAsStream = await client.GetStreamAsync(url);
-
-                var items = await JsonSerializer.DeserializeAsync<List<Item>>(responseAsStream);
-
-                foreach (var item in items)
-                {
-                    Console.WriteLine($"{item.name} - {item.city}, {item.state}");
+                    Console.WriteLine("");
+                    Console.WriteLine("Goodbye!");
+                    Console.WriteLine("");
+                    keepGoing = false;
                 }
 
             }
